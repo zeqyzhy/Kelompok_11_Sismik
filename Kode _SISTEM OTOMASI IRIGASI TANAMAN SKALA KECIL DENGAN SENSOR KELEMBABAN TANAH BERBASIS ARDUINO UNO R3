@@ -1,0 +1,68 @@
+// Kode 1 (Kalibrasi) Soil Moisture Sensor
+
+// deklarasikan variabel untuk pin
+const int sensorpin = A0;
+const int sensorpower = 8;
+const int LED1 = 2;
+const int LED2 = 3;
+const int LED3 = 4;
+
+// variabel untuk pembacaan sensor
+int sensor;
+
+// waktu delay antara pembacaan sensor (milliseconds)
+// mencegah sensor agar tidak korosi dengan tidak diberikan daya
+// dalam waktu yang terlalu lama
+const int delayTime = 1000; 
+
+// "wet" dan "dry" thresholds - memerlukan kalibrasi
+int wet = 500;
+int dry = 800;
+
+void setup(){ // code that only runs once
+  // mengatur pin sebagai output
+  pinMode(LED1,OUTPUT);
+  pinMode(LED2,OUTPUT);
+  pinMode(LED3,OUTPUT);
+  pinMode(sensorpower,OUTPUT);
+  
+  // menginisiasi serial communication
+  Serial.begin(9600);
+}
+
+void loop(){ // code that loops forever
+  // menyalakan sensor dan memberikan delay
+  digitalWrite(sensorpower,HIGH);
+  delay(10);
+  // pembacaan dari sensor
+  sensor = analogRead(sensorpin);
+  // mematikan sensor untuk mencegah korosi
+  digitalWrite(sensorpower,LOW);
+  
+  // print pembacaan sensor
+  Serial.println(sensor);
+  
+  // jika pembacaan sensor lebih besar dari "wet" threshold,
+  // menyalakan LED biru. jika kurang dari "dry"
+  // threshold, menyalakan LED merah. jika diantara keduanya
+  // maka menyalakan LED kuning.
+  if(sensor>wet){
+    digitalWrite(LED1,LOW);
+    digitalWrite(LED2,LOW);
+    digitalWrite(LED3,HIGH);
+  }
+  else if(sensor<dry){
+    digitalWrite(LED1,HIGH);
+    digitalWrite(LED2,LOW);
+    digitalWrite(LED3,LOW);
+  }
+  else{
+    digitalWrite(LED1,LOW);
+    digitalWrite(LED2,HIGH);
+    digitalWrite(LED3,LOW);
+  }
+  
+  // memberikan delay untuk pembacaan selanjutnya
+  delay(delayTime);
+  
+}
