@@ -1,0 +1,72 @@
+// Kode 2 Arduino Soil Moisture Sensor
+
+// deklarasikan variabel untuk pin
+const int sensorpin = A0;
+const int sensorpower = 8;
+const int LED1 = 2;
+const int LED2 = 3;
+const int LED3 = 4;
+const int pumppin = 11;
+
+// variabel untuk pembacaan sensor
+int sensor;
+
+// jeda waktu antara pembacaan sensor (milliseconds)
+const int delayTime = 1; 
+
+// "wet" dan "dry" thresholds - memerlukan kalibrasi
+int wet = 500;
+int dry = 800;
+
+void setup(){ // code that only runs once
+  // mengatur pin sebagai output
+  pinMode(LED1,OUTPUT);
+  pinMode(LED2,OUTPUT);
+  pinMode(LED3,OUTPUT);
+  pinMode(sensorpower,OUTPUT);
+  pinMode(pumppin,OUTPUT);
+  
+  // menginisiasi serial comunication
+  Serial.begin(9600);
+}
+
+void loop(){ // code that loops forever
+  // menyalakan sensor lalu delay
+  digitalWrite(sensorpower,HIGH);
+  delay(10);
+  // pembacaan sensor
+  sensor = analogRead(sensorpin);
+  // mematikan sensor untuk mencegah korosi
+  digitalWrite(sensorpower,LOW);
+  
+  // print pembacaan sensor
+  Serial.println(sensor);
+  
+  // jika sensor lebih dari "wet" threshold,
+  // maka menyalakan LED biru. jika sensor kurang dari "dry"
+  // threshold, maka menyalakan LED merah dan water pump. 
+  // jika diantara keduanya, maka akan menyalakan 
+  // LED kuning.
+  if(sensor>wet){
+    digitalWrite(LED1,LOW);
+    digitalWrite(LED2,LOW);
+    digitalWrite(LED3,HIGH);
+    digitalWrite(pumppin,LOW);
+  }
+  else if(sensor<dry){
+    digitalWrite(LED1,HIGH);
+    digitalWrite(LED2,LOW);
+    digitalWrite(LED3,LOW);
+    digitalWrite(pumppin,HIGH);
+  }
+  else{
+    digitalWrite(LED1,LOW);
+    digitalWrite(LED2,HIGH);
+    digitalWrite(LED3,LOW);
+    digitalWrite(pumppin,LOW);
+  }
+  
+  // menunggu sebelum pembacaan selanjutnya
+  delay(delayTime);
+  
+}
